@@ -1,47 +1,31 @@
 best <- function(state, outcome) {
+  ## Read outcome data
+  data <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
+  fd   <- as.data.frame(cbind(data[, 2],   # hospital
+                              data[, 7],   # state
+                              data[, 11],  # heart attack
+                              data[, 17],  # heart failure
+                              data[, 23]), # pneumonia
+                        stringsAsFactors = FALSE)
+  colnames(fd) <- c("hospital", "state", "heart attack", "heart failure", "pneumonia")
   
-  # Read outcome data
-  out_dt <- data.table::fread('outcome-of-care-measures.csv')
-  
-  outcome <- tolower(outcome)
-  
-  # Column name is same as variable so changing it 
-  chosen_state <- state 
-  
-  # Check that state and outcome are valid
-  if (!chosen_state %in% unique(out_dt[["State"]])) {
+  ## Check that state and outcome are valid
+  if(!state %in% fd[, "state"]){
     stop('invalid state')
-  }
-  
-  if (!outcome %in% c("heart attack", "heart failure", "pneumonia")) {
+  } else if(!outcome %in% c("heart attack", "heart failure", "pneumonia")){
     stop('invalid outcome')
+  } else {
+    si <- which(fd[, "state"] == state)
+    ts <- fd[si, ]    # extracting data for the called state
+    oi <- as.numeric(ts[, eval(outcome)])
+    min_val <- min(oi, na.rm = TRUE)
+    result  <- ts[, "hospital"][which(oi == min_val)]
+    output  <- result[order(result)]
   }
-  
-  # Renaming Columns to be less verbose and lowercase
-  setnames(out_dt
-           , tolower(sapply(colnames(out_dt), gsub, pattern = "^Hospital 30-Day Death \\(Mortality\\) Rates from ", replacement = "" ))
-  )
-  
-  #Filter by state
-  out_dt <- out_dt[state == chosen_state]
-  
-  # Columns indices to keep
-  col_indices <- grep(paste0("hospital name|state|^",outcome), colnames(out_dt))
-  
-  # Filtering out unnessecary data 
-  out_dt <- out_dt[, .SD ,.SDcols = col_indices]
-  
-  # Find out what class each column is 
-  # sapply(out_dt,class)
-  out_dt[, outcome] <- out_dt[,  as.numeric(get(outcome))]
-  
-  
-  # Removing Missing Values for numerical datatype (outcome column)
-  out_dt <- out_dt[complete.cases(out_dt),]
-  
-  # Order Column to Top 
-  out_dt <- out_dt[order(get(outcome), `hospital name`)]
-  
-  return(out_dt[, "hospital name"][1])
-  
+  return(output)
 }
+
+# example output:
+best("SC", "heart attack")
+best("NY", "pneumonia")
+best("AK", "pneumonia")
