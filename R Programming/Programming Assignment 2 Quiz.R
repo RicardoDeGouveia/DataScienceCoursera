@@ -38,3 +38,4 @@
     x$setInverse(inv)
     inv      
   }
+  
