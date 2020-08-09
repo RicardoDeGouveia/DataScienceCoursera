@@ -1,57 +1,43 @@
-rankhospital <- function(state, outcome, num = "best") {
+rankhospital <- function(state, outcome, rank = "best"){
+  ## Read outcome data
+  data <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
+  fd   <- as.data.frame(cbind(data[, 2],  # hospital
+                              data[, 7],  # state
+                              data[, 11],  # heart attack
+                              data[, 17],  # heart failure
+                              data[, 23]), # pneumonia
+                        stringsAsFactors = FALSE)
+  colnames(fd) <- c("hospital", "state", "heart attack", "heart failure", "pneumonia")
   
-  # Read outcome data
-  out_dt <- data.table::fread('outcome-of-care-measures.csv')
-  
-  outcome <- tolower(outcome)
-  
-  # Column name is same as variable so changing it 
-  chosen_state <- state 
-  
-  # Check that state and outcome are valid
-  if (!chosen_state %in% unique(out_dt[["State"]])) {
+  ## Check that state and outcome are valid
+  if (!state %in% fd[, "state"]) {
     stop('invalid state')
-  }
-  
-  if (!outcome %in% c("heart attack", "heart failure", "pneumonia")) {
+  } else if (!outcome %in% c("heart attack", "heart failure", "pneumonia")){
     stop('invalid outcome')
+  } else if (is.numeric(rank)) {
+    si <- which(fd[, "state"] == state)
+    ts <- fd[si, ]                     # extracting dataframe for the called state
+    ts[, eval(outcome)] <- as.numeric(ts[, eval(outcome)])
+    ts <- ts[order(ts[, eval(outcome)], ts[, "hospital"]), ]
+    output <- ts[, "hospital"][rank]
+  } else if (!is.numeric(rank)){
+    if (rank == "best") {
+      output <- best(state, outcome)
+    } else if (rank == "worst") {
+      si <- which(fd[, "state"] == state)
+      ts <- fd[si, ]    
+      ts[, eval(outcome)] <- as.numeric(ts[, eval(outcome)])
+      ts <- ts[order(ts[, eval(outcome)], ts[, "hospital"], decreasing = TRUE), ]
+      output <- ts[, "hospital"][1]
+    } else {
+      stop('invalid rank')
+    }
   }
-  
-  # Renaming Columns to be less verbose and lowercase
-  setnames(out_dt
-           , tolower(sapply(colnames(out_dt), gsub, pattern = "^Hospital 30-Day Death \\(Mortality\\) Rates from ", replacement = "" ))
-  )
-  
-  #Filter by state
-  out_dt <- out_dt[state == chosen_state]
-  
-  # Columns indices to keep
-  col_indices <- grep(paste0("hospital name|state|^",outcome), colnames(out_dt))
-  
-  # Filtering out unnessecary data 
-  out_dt <- out_dt[, .SD ,.SDcols = col_indices]
-  
-  # Find out what class each column is 
-  # sapply(out_dt,class)
-  out_dt[, outcome] <- out_dt[,  as.numeric(get(outcome))]
-  
-  
-  # Removing Missing Values for numerical datatype (outcome column)
-  out_dt <- out_dt[complete.cases(out_dt),]
-  
-  # Order Column to Top 
-  out_dt <- out_dt[order(get(outcome), `hospital name`)]
-  
-  out_dt <- out_dt[,  .(`hospital name` = `hospital name`, state = state, rate = get(outcome), Rank = .I)]
-  
-  if (num == "best"){
-    return(out_dt[1,`hospital name`])
-  }
-  
-  if (num == "worst"){
-    return(out_dt[.N,`hospital name`])
-  }
-  
-  return(out_dt[num,`hospital name`])
-  
+  return(output)
 }
+
+# example output:
+rankhospital("NC", "heart attack", "worst")
+rankhospital("WA", "heart attack", 7)
+rankhospital("TX", "pneumonia", 10)
+rankhospital("NY", "heart attack", 7)
