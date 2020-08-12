@@ -1,0 +1,95 @@
+Week 1 Quiz
+CALIFICACIÓN DEL ÚLTIMO ENVÍO
+100%
+1.
+Pregunta 1
+Which of the following is a principle of analytic graphics?
+
+1 / 1 puntos
+
+Show comparisons
+
+Correcto
+2.
+Pregunta 2
+What is the role of exploratory graphs in data analysis?
+
+1 / 1 puntos
+
+The goal is for personal understanding.
+
+Correcto
+3.
+Pregunta 3
+Which of the following is true about the base plotting system?
+
+1 / 1 puntos
+
+Plots are created and annotated with separate functions
+
+Correcto
+Functions like 'plot' or 'hist' typically create the plot on the graphics device and functions like 'lines', 'text', or 'points' will annotate or add data to the plot.
+
+4.
+Pregunta 4
+Which of the following is an example of a valid graphics device in R?
+
+1 / 1 puntos
+
+A PDF file
+
+Correcto
+5.
+Pregunta 5
+Which of the following is an example of a vector graphics device in R?
+
+1 / 1 puntos
+
+Postscript
+
+Correcto
+6.
+Pregunta 6
+Bitmapped file formats can be most useful for
+
+1 / 1 puntos
+
+Scatterplots with many many points
+
+Correcto
+7.
+Pregunta 7
+Which of the following functions is typically used to add elements to a plot in the base graphics system?
+
+1 / 1 puntos
+
+points()
+
+Correcto
+8.
+Pregunta 8
+Which function opens the screen graphics device for the Mac?
+
+1 / 1 puntos
+
+quartz()
+
+Correcto
+9.
+Pregunta 9
+What does the 'pch' option to par() control?
+
+1 / 1 puntos
+
+the plotting symbol/character in the base graphics system
+
+Correcto
+10.
+Pregunta 10
+If I want to save a plot to a PDF file, which of the following is a correct way of doing that?
+
+1 / 1 puntos
+
+Construct the plot on the screen device and then copy it to a PDF file with dev.copy2pdf()
+
+Correcto
