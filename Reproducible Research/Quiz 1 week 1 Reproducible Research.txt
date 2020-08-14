@@ -1,0 +1,104 @@
+Week 1 Quiz
+CALIFICACIÓN DEL ÚLTIMO ENVÍO
+100%
+1.
+Pregunta 1
+Suppose I conduct a study and publish my findings. Which of the following is an example of a replication of my study?
+
+1 / 1 puntos
+
+An investigator at another institution conducts a study addressing the same question, collects her own data, analyzes it separately from me, and publishes her own findings.
+
+Correcto
+
+2.
+Pregunta 2
+Which of the following is a requirement for a published data analysis to be reproducible?
+
+1 / 1 puntos
+
+The full computer code for doing the data analysis is made publicly available.
+
+Correcto
+
+3.
+Pregunta 3
+Which of the following is an example of a reproducible study?
+
+1 / 1 puntos
+
+The study's analytic data and computer code for the data analysis are publicly available. When the code is run on the analytic data, the findings are identical to the published results.
+
+Correcto
+
+4.
+Pregunta 4
+Which of the following is a reason that a study might NOT be fully replicated?
+
+1 / 1 puntos
+
+The original study was opportunistic in its timing and it would be difficult to find a similar context in which to repeat it.
+The original study was very expensive and there is no money to repeat it in a different setting.
+
+Correcto
+
+5.
+Pregunta 5
+Which of the following is a reason why publishing reproducible research is increasingly important?
+
+1 / 1 puntos
+
+New technologies are increasing the rate of data collection, creating datasets that are more complex and extremely high dimensional.
+
+Correcto
+
+6.
+Pregunta 6
+What is the role of processing code in the research pipeline?
+
+1 / 1 puntos
+
+It transforms the measured data into analytic data.
+
+Correcto
+
+7.
+Pregunta 7
+Which is a goal of literate statistical programming?
+
+1 / 1 puntos
+
+Combine explanatory text and data analysis code in a single document.
+
+Correcto
+
+8.
+Pregunta 8
+What does it mean to weave a literate statistical program?
+
+1 / 1 puntos
+
+Transform the literate program into a human readable document.
+
+Correcto
+
+9.
+Pregunta 9
+Which of the following is required to implement a literate programming system?
+
+1 / 1 puntos
+
+A programming language like R.
+A documentation language like LaTeX.
+
+Correcto
+
+10.
+Pregunta 10
+What is one way in which the knitr system differs from Sweave?
+
+1 / 1 puntos
+
+knitr allows for the use of markdown instead of LaTeX.
+
+Correcto
