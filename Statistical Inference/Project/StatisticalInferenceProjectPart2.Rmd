@@ -1,0 +1,103 @@
+---
+title: "Statistical Inference Project Part 2"
+author: "Ricardo De Gouveia"
+date: "Aug 17, 2020"
+output: pdf_document
+---
+
+
+Now in the second portion of the project, we’re going to analyze the ToothGrowth data in the R datasets package.
+
+## Instructions
+
+1. Load the ToothGrowth data and perform some basic exploratory data analyses
+2. Provide a basic summary of the data.
+3. Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there’s other approaches worth considering)
+4. State your conclusions and the assumptions needed for your conclusions.
+
+### Loading Libraries
+
+```{r DataLoading}
+library("ggplot2")
+```
+
+### 1. Load the ToothGrowth data and perform some basic exploratory data analyses
+
+```{r}
+# Load the data ToothGrowth
+data(ToothGrowth)
+# Look at the structure of the data
+str(ToothGrowth)
+```
+
+```{r}
+# Look at the first 5 rows of the data
+head(ToothGrowth, 5)
+```
+
+### 2. Provide a basic summary of the data.
+
+```{r}
+# Look at the summary of the data
+summary(ToothGrowth)
+```
+
+```{r}
+# Compare means of the different delivery methods
+tapply(ToothGrowth$len,ToothGrowth$supp, mean)
+```
+
+```{r}
+# Make a plot to look at data graphically
+ggplot(ToothGrowth, aes(factor(dose), len, fill = factor(dose))) +
+      geom_boxplot() +
+      # facet_grid(.~supp)+
+      facet_grid(.~supp, labeller = as_labeller(
+            c("OJ" = "Orange juice", 
+              "VC" = "Ascorbic Acid"))) +
+      labs(title = "Tooth growth of 60 guinea pigs 
+           by dosage and\nby delivery method of vitamin C",
+           x = "Dose in milligrams/day", 
+           y = "Tooth Lengh") +
+      scale_fill_discrete(name = "Dosage of\nvitamin C\nin mg/day")
+```
+
+### 3. Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose.
+
+```{r}
+# Comparison by delivery method for the same dosage
+t05 <- t.test(len ~ supp, 
+       data = rbind(ToothGrowth[(ToothGrowth$dose == 0.5) & 
+                                      (ToothGrowth$supp == "OJ"),],
+                    ToothGrowth[(ToothGrowth$dose == 0.5) & 
+                                      (ToothGrowth$supp == "VC"),]), 
+       var.equal = FALSE)
+
+t1 <- t.test(len ~ supp, 
+       data = rbind(ToothGrowth[(ToothGrowth$dose == 1) & 
+                                      (ToothGrowth$supp == "OJ"),],
+                    ToothGrowth[(ToothGrowth$dose == 1) & 
+                                      (ToothGrowth$supp == "VC"),]), 
+       var.equal = FALSE)
+
+t2 <- t.test(len ~ supp, 
+       data = rbind(ToothGrowth[(ToothGrowth$dose == 2) & 
+                                      (ToothGrowth$supp == "OJ"),],
+                    ToothGrowth[(ToothGrowth$dose == 2) & 
+                                      (ToothGrowth$supp == "VC"),]), 
+       var.equal = FALSE)
+
+# Make summary of the conducted t.tests, which compare the delivery methods by dosage
+# take p-values and CI
+summaryBYsupp <- data.frame(
+      "p-value" = c(t05$p.value, t1$p.value, t2$p.value),
+      "Conf.Low" = c(t05$conf.int[1],t1$conf.int[1], t2$conf.int[1]),
+      "Conf.High" = c(t05$conf.int[2],t1$conf.int[2], t2$conf.int[2]),
+      row.names = c("Dosage .05","Dosage 1","Dosage 2"))
+# Show the data table 
+summaryBYsupp
+```
+
+### 4. State your conclusions and the assumptions needed for your conclusions.
+
+With 95% confidence we reject the null hypothesis, stating that there is no difference in the tooth growth by the delivery method for .5 and 1 milligrams/day. We observe p-values less than the treshold of .05 and the confidence levels don’t include 0. So, for dosage of .5 milligrams/day and 1 milligrams/day does matter the delivery method. With 95% confidence we fail to reject the null hypothesis, stating that there is no difference in the tooth growth by the delivery method for 2 milligrams/day. We observe p-values more than the treshold of .05 and the confidence levels include 0. So, for dosage of 2 milligrams/day the delivery method doesn’t matter.
