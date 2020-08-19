@@ -1,0 +1,195 @@
+Quiz 1
+CALIFICACIÓN DEL ÚLTIMO ENVÍO
+100%
+
+1.
+Pregunta 1
+Consider the data set given below
+
+x <- c(0.18, -1.54, 0.42, 0.95)
+
+And weights given by
+
+w <- c(2, 1, 3, 1)
+
+Give the value of \muμ that minimizes the least squares equation
+
+\sum_{i=1}^{n} w_{i}(x_{i}-\mu)^2
+
+1 / 1 puntos
+
+0.1471
+
+Correcto
+sum(x * w)/sum(w)
+## [1] 0.1471
+
+2.
+Pregunta 2
+Consider the following data set
+
+x <- c(0.8, 0.47, 0.51, 0.73, 0.36, 0.58, 0.57, 0.85, 0.44, 0.42)
+y <- c(1.39, 0.72, 1.55, 0.48, 1.19, -1.59, 1.23, -0.65, 1.49, 0.05)
+
+Fit the regression through the origin and get the slope treating y
+
+as the outcome and x as the regressor. (Hint, do not center the data since we want regression through the origin, not through the means of the data.)
+
+1 / 1 puntos
+
+0.8263
+
+Correcto
+
+coef(lm(y ~ x - 1))
+##      x 
+## 0.8263
+sum(y * x)/sum(x^2)
+## [1] 0.8263
+
+3.
+Pregunta 3
+Do \verb|data(mtcars)|data(mtcars) from the datasets package and fit the regression
+
+model with mpg as the outcome and weight as the predictor. Give
+
+the slope coefficient.
+
+1 / 1 puntos
+
+-5.344
+
+Correcto
+
+data(mtcars)
+summary(lm(mpg ~ wt, data = mtcars))
+## 
+## Call:
+## lm(formula = mpg ~ wt, data = mtcars)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -4.543 -2.365 -0.125  1.410  6.873 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   37.285      1.878   19.86  < 2e-16 ***
+## wt            -5.344      0.559   -9.56  1.3e-10 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.05 on 30 degrees of freedom
+## Multiple R-squared:  0.753,  Adjusted R-squared:  0.745 
+## F-statistic: 91.4 on 1 and 30 DF,  p-value: 1.29e-10
+attach(mtcars)
+cor(mpg, wt) * sd(mpg)/sd(wt)
+## [1] -5.344
+detach(mtcars)
+
+4.
+Pregunta 4
+Consider data with an outcome (Y) and a predictor (X). The standard deviation of the predictor is one half that of the outcome. The correlation between the two variables is .5. What value would the slope coefficient for the regression model with YY as the outcome and XX as the predictor?
+
+1 / 1 puntos
+
+1
+
+Correcto
+Note it is given that sd(Y)/sd(X)=2 and \mathrm{Cor(Y, X)} = 0.5.
+
+Therefore, we know that the regression coefficient would be:
+
+\mathrm{Cor}(Y, X) \frac{sd(Y)}{sd(X)} = 0.5 \times 2 = 1
+
+5.
+Pregunta 5
+Students were given two hard tests and scores were normalized to have empirical mean 0 and variance 1. The correlation between the scores on the two tests was 0.4. What would be the expected score on Quiz 2 for a student who had a normalized score of 1.5 on Quiz 1?
+
+1 / 1 puntos
+
+0.6
+
+Correcto
+
+This is the classic regression to the mean problem. We are expecting the score to get multiplied by 0.4. So
+
+1.5 * 0.4
+## [1] 0.6
+
+6.
+Pregunta 6
+Consider the data given by the following
+
+x <- c(8.58, 10.46, 9.01, 9.64, 8.86)
+
+What is the value of the first measurement if x were normalized (to have mean 0 and variance 1)?
+
+1 / 1 puntos
+
+-0.9719
+
+Correcto
+
+((x - mean(x))/sd(x))[1]
+## [1] -0.9719
+
+7.
+Pregunta 7
+Consider the following data set (used above as well). What is the intercept for fitting the model with x as the predictor and y as the outcome?
+
+x <- c(0.8, 0.47, 0.51, 0.73, 0.36, 0.58, 0.57, 0.85, 0.44, 0.42)
+y <- c(1.39, 0.72, 1.55, 0.48, 1.19, -1.59, 1.23, -0.65, 1.49, 0.05)
+
+1 / 1 puntos
+
+1.567
+
+Correcto
+
+coef(lm(y ~ x))[1]
+## (Intercept) 
+##       1.567
+
+8.
+Pregunta 8
+You know that both the predictor and response have mean 0. What
+
+can be said about the intercept when you fit a linear regression?
+
+1 / 1 puntos
+
+It must be identically 0.
+
+Correcto
+The intercept estimate is $\bar Y - \beta_1 \bar X$ and so will be zero.
+
+9.
+Pregunta 9
+Consider the data given by
+
+x <- c(0.8, 0.47, 0.51, 0.73, 0.36, 0.58, 0.57, 0.85, 0.44, 0.42)
+
+What value minimizes the sum of the squared distances between these points and itself?
+
+1 / 1 puntos
+
+0.573
+
+Correcto
+This is the least squares estimate, which works out to be the mean in this case.
+
+mean(x)
+## [1] 0.573
+
+10.
+Pregunta 10
+Let the slope having fit Y as the outcome and X as the predictor be denoted as β_1. Let the slope from fitting X as the outcome and Y as the predictor be denoted as γ_1. Suppose that you divide β_1 by γ_1; in other words consider β_1/γ_1. What is this ratio always equal to?
+
+1 / 1 puntos
+
+Var(Y)/Var(X)
+
+Correcto
+The β_1=Cor(Y,X)SD(Y)/SD(X) and γ_1=Cor(Y,X)SD(X)/SD(Y).
+
+Thus the ratio is then Var(Y)/Var(X).
