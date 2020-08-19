@@ -1,0 +1,131 @@
+---
+title: "Regression Models Project"
+author: "Ricardo De Gouveia"
+date: "19/8/2020"
+output: pdf_document
+---
+
+## Executive summary
+
+The goal of this project is to study the influence of variables from the mtcars dataset. More precisely, we want to know how the mpg is related to other variables, in particular the ‘am’ variable, which defines if the vehicle has an automatic or manual transmission. Beyond that, it will be also interesting to know if other predictors can explain the outcome mpg. The goal is not to build the perfect model, but to explain as good a possible, the interaction between the predictors and the outcome.
+
+## Load the Data 
+
+```{r}
+data("mtcars")
+```
+
+## Analysis of data
+
+#Raw analysis
+
+As a first step, we will draw a boxplot representing the significant values for each am.
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+mtcars$am <- as.factor(mtcars$am)
+g <- ggplot(mtcars, aes(x=am, y=mpg,fill=am)) + geom_boxplot()
+g <- g + ggtitle("Impact of transmission mode on car efficiency")
+g <- g + scale_x_discrete(labels=c("Automatic","Manual"))
+g <- g + scale_fill_discrete(name="Transmission",labels=c("Automatic", "Manual"))
+g<- g + theme(plot.title = element_text(color="red", size=14, face="bold"))
+g
+```
+
+This boxplot shows obviously that the mode of transmission has a great influence on the car consumption. Automatic transmission gives higher values of mpg than manual transmission. To be more precise, the two following lines give the summary values for each category of transmission (0 = automatic, 1 = manual). We can also verify that the position of the means is very different for the automatic transmission and the manual transmission:
+
+- **For automatic transmission:** The median is about at the middle of the box,i.e. the observations of mpg are dispatched symetrically around this value
+
+- **For manual transmission:** The median is low in the box, i.e. there is a large dispersion of the high values of mpg.
+
+```{r}
+summary(mtcars[mtcars$am==0,1])
+```
+
+```{r}
+summary(mtcars[mtcars$am==1,1])
+```
+
+## First linear model : mpg vs am
+
+Here we try to build a linear model between the outcome mpg and the predictor am.
+
+```{r}
+fit1 <- lm(mpg~factor(am),data=mtcars)
+summary(fit1)
+```
+
+As we can see, the adjusted $R^2$ is around 0.338. That means that this first model can only explain 33.8% of the data. So there may be other variables which could give a better understanding of the outcome. We know that adding more variables increases the $R^2$ coefficient. So we expect a higher value of this coefficient by adding more predictors into the model.
+
+## Second linear model : mpg vs all other predictors
+
+In this section, we will include all the variables (except mpg) to explain mpg. This will give us a first approach of the robustness of this model including all the predictors.
+
+```{r}
+library(car)
+library(corrplot)
+```
+
+```{r}
+fit2 <- lm(mpg~.,data=mtcars)
+summary(fit2)
+vif(fit2)
+```
+
+As we can see, the adjusted $R^2$ is much higher (around 81%). This gives us the proof that other variables have an impact on the outcome mpg. But some may not be absolutely necessary. We will detect this in the following section by studing the multicolinearity.
+
+## Study of the multicolinearity of the variables
+
+To check how the variables are interdependant, we use the correlation matrix.
+
+```{r}
+mtcarsCorrMatrix <- cor(mtcars[sapply(mtcars,is.numeric)])
+corrplot(mtcarsCorrMatrix,method="number")
+```
+
+The correlation matrix shows us the dependancies between the dataset variables. We can see in particular that disp, vs and hp are highly dependent on other variables. We will try to remove them from the model and see the impact.
+
+```{r}
+fit3 <- lm(mpg~. - disp-hp-vs,data=mtcars)
+summary(fit3)
+```
+
+The adjusted $R^2$ raises to 82.2%. So that means that our model is better than the previous ones, because a higher percentage of the dataset is explained by the predictive model. Let’s continue the investigation and remove the variable drat from the model.
+
+```{r}
+fit4 <- lm(mpg~. - disp-hp-vs-drat,data=mtcars)
+summary(fit4)
+```
+
+The asjusted $R^2$ is a little bit higher than in the previous model (82.7% vs 82.2%). So we can estimate this model is quite good. Let’s try a few more tests by removing other predictors.
+
+```{r}
+fit5 <- lm(mpg~. - disp-hp-vs-carb-drat,data=mtcars)
+summary(fit5)
+fit6 <- lm(mpg~. - disp-hp-vs-carb-drat-qsec,data=mtcars)
+summary(fit6)
+```
+
+The results from fit5 to fit6 show that the adjusted $R^2$ decreases. So we can estimate that these last three models are less precise than fit4, which appears to be the best one.
+
+## Analysis of residuals
+
+```{r}
+plot(fit4,which=1)
+```
+
+We can see from this graph that three points are far from the global repartition of data : Fiat 128, Toyota Corolla and Datsun 710. These points may be outliers. Let us see the results after removing these points.
+
+```{r}
+fit4bis <- lm(mpg~. - disp-hp-vs-drat,data=mtcars[-c(3,18,20),])
+summary(fit4bis)$adj.r.squared
+```
+
+```{r}
+plot(fit4bis,which=1)
+```
+
+The ajusted $R^2$ has been improved after this transformation. These points may be studied separately.
