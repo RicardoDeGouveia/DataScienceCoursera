@@ -1,0 +1,45 @@
+---
+title: "Developing Data Products - R Markdown Presentation & Plotly"
+author: "Ricardo De Gouveia"
+date: "23/8/2020"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## R Markdown Presentation & Plotly
+
+Create a web page presentation using R Markdown that features a plot created with Plotly. Host your webpage on either GitHub Pages, RPubs, or NeoCities. Your webpage must contain the date that you created the document, and it must contain a plot created with Plotly. We would love to see you show off your creativity!
+
+## R code
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+library(plotly)
+library(ggplot2)
+data("mtcars")
+head(mtcars)
+
+```
+
+\pagebreak
+
+
+## Now a Scatter Plot
+
+```{r, message=FALSE,warning=FALSE}
+plot_ly(mtcars, x = ~hp, y = ~mpg, color = ~cyl, type = "scatter", mode = "markers")
+```
+
+
+\pagebreak
+
+## Now a BoxPlot
+
+```{r, message=FALSE,warning=FALSE}
+# create factors with value labels
+mtcars$cyl <- factor(mtcars$cyl,levels=c(4,6,8), labels=c("4cyl","6cyl","8cyl"))
+
+plot_ly(mtcars, x = ~mpg, y = ~cyl, color = ~cyl, type = "box", mode = "markers")
+```
