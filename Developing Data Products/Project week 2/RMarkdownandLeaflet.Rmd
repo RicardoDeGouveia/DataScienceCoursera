@@ -1,0 +1,69 @@
+---
+title: "Developing Data Products - R Markdown and Leaflet"
+author: "Ricardo De Gouveia"
+date: "22/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# R Markdown and Leaflet
+
+
+Create a web page using R Markdown that features a map created with Leaflet.
+
+Host your webpage on either GitHub Pages, RPubs, or NeoCities.
+
+Your webpage must contain the date that you created the document, and it must contain a map created with Leaflet. We would love to see you show off your creativity!
+
+## Load Library
+
+```{r}
+library(leaflet)
+```
+
+# Mapping Chandler/Gilbert High Schools
+
+```{r}
+highSchools <- data.frame(name=c("Basha HS", "Perry HS", "Chandler HS", "Hamilton HS"),
+                        enrollment = c(2623, 3542, 3241, 4100),
+                        lat = c(33.2209, 33.2619, 33.3089, 33.252912),
+                        lng = c(-111.7592, -111.7478, -111.8421, -111.842714))
+
+hsMascotIcons <- iconList(
+  basha = makeIcon("https://www.cusd80.com/cms/lib/AZ01001175/Centricity/Template/GlobalAssets/images///logos/bhs-logo.png", iconWidth = 31, iconHeight = 31),
+  perry = makeIcon("https://www.cusd80.com/cms/lib/AZ01001175/Centricity/Template/GlobalAssets/images///logos/phs-logo.png", iconWidth = 31, iconHeight = 31)               
+#  chandler = makeIcon("https://www.cusd80.com/cms/lib/AZ01001175/Centricity/Template/GlobalAsse#ts/images///logos/chs-logo.png", iconWidth = 31, iconHeight = 31)
+#  "https://www.cusd80.com/cms/lib/AZ01001175/Centricity/Template/GlobalAsse#ts/images///logos/hhs-logo.png",
+)
+
+hsMascotIcons[c("basha", "perry")]
+```
+
+```{r}
+# lat lng data
+df <- sp::SpatialPointsDataFrame(
+  cbind(
+    (runif(20) - .5) * 10 - 111.5000,  # lng
+    (runif(20) - .5) * 3.8 + 33.1000  # lat
+  ),
+  data.frame(type = factor(
+    ifelse(runif(20) > 0.75, "basha", "perry"),
+    c("perry", "basha")
+  ))
+)
+
+hsSites <- c(
+  "<a href='https://www.cusd80.com/Domain/457'>Basha HS</a>",
+  "<a href='https://www.cusd80.com/Domain/3255'>Perry HS</a>",
+  "<a href='https://www.cusd80.com/Domain/913'>Chandler HS</a>",
+  "<a href='https://www.cusd80.com/Domain/2039'>Hamilton HS</a>"
+)
+
+highSchools %>%
+  leaflet() %>%
+  addTiles() %>%
+  addMarkers(icon = hsMascotIcons, popup = hsSites)
+```
