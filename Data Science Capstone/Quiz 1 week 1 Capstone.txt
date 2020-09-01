@@ -1,0 +1,82 @@
+Quiz 1: Getting Started
+CALIFICACIÓN DEL ÚLTIMO ENVÍO
+100%
+
+1.
+Pregunta 1
+The \verb| en_US.blogs.txt | en_US.blogs.txt  file is how many megabytes?
+
+1 / 1 puntos
+
+200
+
+Correcto
+Do \verb| ls -alh| ls -alh in the \verb|Coursera-Swiftkey/final/en_US|Coursera-Swiftkey/final/en_US directory.
+
+2.
+Pregunta 2
+The \verb|en_US.twitter.txt|en_US.twitter.txt has how many lines of text?
+
+1 / 1 puntos
+
+Over 2 million
+
+Correcto
+Do \verb|wc -l en_US.twitter.txt|wc -l en_US.twitter.txt at the prompt (or git bash on windows) or \verb|length(readLines("en_US.twitter.txt")) |length(readLines("en_US.twitter.txt"))  in R
+
+3.
+Pregunta 3
+What is the length of the longest line seen in any of the three en_US data sets?
+
+1 / 1 puntos
+
+Over 40 thousand in the blogs data set
+
+Correcto
+Again a simple wc command suffices \verb|wc -L *.txt|wc -L *.txt inthe directory with the three files. Note, we had a small discrepancy between doing thin in R versus WC.
+
+4.
+Pregunta 4
+In the en_US twitter data set, if you divide the number of lines where the word "love" (all lowercase) occurs by the number of lines the word "hate" (all lowercase) occurs, about what do you get?
+
+1 / 1 puntos
+
+4
+
+Correcto
+\verb| grep "love" en_US.twitter | wc -l| grep "love" en_US.twitter wc−l∣ and
+
+\verb| grep "hate" en_US.twitter | wc -l| grep "hate" en_US.twitter wc−l∣ gives you the counts. Then you could divide in whatever. If you never want to leave the console, you can use bc (not present on gitbash in windows). You could also read into R (\verb|readLines|readLines) and use character search.
+
+This worked on gitbash
+
+\verb| love=$(grep "love" en_US.twitter.txt | wc -l) |  love=$(grep "love" en_US.twitter.txt  wc−l)∣ then
+
+\verb| hate=$(grep "hate" en_US.twitter.txt | wc -l) | hate=$(grep "hate" en_US.twitter.txt  wc−l)∣ then
+
+\verb| let m=love/hate| let m=love/hate then
+
+\verb| echo $m |  echo $m 
+
+5.
+Pregunta 5
+The one tweet in the en_US twitter data set that matches the word "biostats" says what?
+
+1 / 1 puntos
+
+They haven't studied for their biostats exam
+
+Correcto
+\verb| grep -i "biostat" en_US.twitter.txt| grep -i "biostat" en_US.twitter.txt (note the -i doesn't matter since there's only one line ignoring case).
+
+
+6.
+Pregunta 6
+How many tweets have the exact characters "A computer once beat me at chess, but it was no match for me at kickboxing". (I.e. the line matches those characters exactly.)
+
+1 / 1 puntos
+
+3
+
+Correcto
+\verb|grep -x "A computer once beat me at chess, but it was no match for me at kickboxing" en_US.twitter.txt | wc -l |grep -x "A computer once beat me at chess, but it was no match for me at kickboxing" en_US.twitter.txt wc−l∣
