@@ -1,0 +1,56 @@
+---
+title: "Reproducible Pitch Presentation"
+author: "Ricardo De Gouveia"
+date: "31/8/2020"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Intoduction 
+
+This presentation is prepared for the coursera course Developing Data Products. In this project, I will present my Shiny Application that I have just built. This Shiny Application uses New York Airquality Data from the datasets package; cleans the data; fits a simple linear model; predicts the desired outcome; plots the data and the predicted outcome in the same scatter plot; and also outputs the predicted value in the main panel as a number.
+
+Please make sure airquality data is loaded into your workspace if you are to reproduce this work.
+
+\newpage
+
+## The Code 
+
+```{r, eval=FALSE, echo=TRUE}
+# Cleaning and tidying data
+air<-na.omit(airquality)
+oz<-air$Ozone
+Temp<-air$Temp
+# Building a simple linear model
+model1<-lm(oz~Temp)
+# Predict outcomes
+model1pred<-reactive({
+        TempInput<-input$sliderTemp
+        predict(model1, newdata=data.frame(Temp=TempInput))
+})   
+```
+
+\newpage
+
+## The Plot of the data of the actual data
+
+```{r}
+data("airquality")
+
+plot(airquality$Temp, airquality$Ozone, xlab = "Temperature", ylab = "Ozone", bty="n", pch=16)
+```
+
+\newpage 
+
+## The Shiny Application
+
+The Shiny application allows users to enter the value of Temperature via a slider. Then it uses that user entered Temperature value in the analysis to predict the Ozone level in the air. The application then outputs the predicted value in the scatter plot with red colored circle, and also it outputs to the main panel as a number.
+
+You may use the application b going to this link:
+[https://ricardodegouveia.shinyapps.io/MyShinyApp/](https://ricardodegouveia.shinyapps.io/MyShinyApp/)
+
+You may refer to ui.R and server.R codes here:
+[https://github.com/RicardoDeGouveia/DataScienceCoursera/tree/master/MyShinyApp](https://github.com/RicardoDeGouveia/DataScienceCoursera/tree/master/MyShinyApp)
