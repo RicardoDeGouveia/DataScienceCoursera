@@ -1,0 +1,105 @@
+Quiz 2: Natural language processing I
+CALIFICACIÓN DEL ÚLTIMO ENVÍO
+100%
+
+1.
+Pregunta 1
+For each of the sentence fragments below use your natural language processing algorithm to predict the next word in the sentence.
+
+The guy in front of me just bought a pound of bacon, a bouquet, and a case of
+
+1 / 1 puntos
+
+beer
+
+Correcto
+
+2.
+Pregunta 2
+You're the reason why I smile everyday. Can you follow me please? It would mean the
+
+1 / 1 puntos
+
+world
+
+Correcto
+
+3.
+Pregunta 3
+Hey sunshine, can you follow me and make me the
+
+1 / 1 puntos
+
+happiest
+
+Correcto
+
+4.
+Pregunta 4
+Very early observations on the Bills game: Offense still struggling but the
+
+1 / 1 puntos
+
+defense
+
+Correcto
+
+5.
+Pregunta 5
+Go on a romantic date at the
+
+1 / 1 puntos
+
+beach
+
+Correcto
+
+6.
+Pregunta 6
+Well I'm pretty sure my granny has some old bagpipes in her garage I'll dust them off and be on my
+
+1 / 1 puntos
+
+way
+
+Correcto
+
+7.
+Pregunta 7
+Ohhhhh #PointBreak is on tomorrow. Love that film and haven't seen it in quite some
+
+1 / 1 puntos
+
+time
+
+Correcto
+
+8.
+Pregunta 8
+After the ice bucket challenge Louis will push his long wet hair out of his eyes with his little
+
+1 / 1 puntos
+
+fingers
+
+Correcto
+
+9.
+Pregunta 9
+Be grateful for the good times and keep the faith during the
+
+1 / 1 puntos
+
+bad
+
+Correcto
+
+10.
+Pregunta 10
+If this isn't the cutest thing you've ever seen, then you must be
+
+1 / 1 puntos
+
+Insane 
+
+Correcto
