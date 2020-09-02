@@ -1,0 +1,213 @@
+---
+title: "Milestone Report"
+author: "Ricardo De Gouveia"
+date: "1/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction 
+
+We will be performing 2 tasks within the framework of this work/report.
+
+TASK #1 - EXPLORATORY DATA ANALYSIS ON TEXT DATA
+
+The first step in building a predictive model for text is understanding the distribution and relationship between the words, tokens, and phrases in the text. The goal of this task is to understand the basic relationships you observe in the data and prepare to build our first linguistic models.
+
+Tasks to accomplish:
+
+Exploratory analysis - perform a thorough exploratory analysis of the data, understanding the distribution of words and relationship between the words in the corpora.
+Understand frequencies of words and word pairs - build figures and tables to understand variation in the frequencies of words and word pairs in the data.
+TASK #2 - MODELING
+
+The goal here is to build our first simple model for the relationship between words. This is the first step in building a predictive text mining application. We will explore simple models and discover more complicated modeling techniques.
+
+Tasks to accomplish:
+
+Build basic n-gram model for predicting the next word based on the previous 1, 2, or 3 words.
+Build a model to handle unseen n-grams - in some cases people will want to type a combination of words that does not appear in the corpora. Build a model to handle cases where a particular n-gram isn’t observed.
+
+## General adjustments
+
+The raw corpus data is downloaded and stored locally at:
+
+Blog: ./data/en_US.blogs.txt
+
+News: ./data/en_US.news.txt
+
+Twitter: ./data/en_US.twitter.txt
+
+I have saved the datasets in the directory named “Capstone” on my Desktop. The file path of the location is “C:.jyenis2”.
+
+Also, let’s load all the library that we need to do above mentioned tasks.
+
+```{r}
+suppressMessages(library(NLP))
+suppressMessages(library(tm))
+suppressMessages(library(RColorBrewer))
+suppressMessages(library(wordcloud))
+suppressMessages(library(dplyr))
+suppressMessages(library(stringi))
+suppressMessages(library(RWeka))
+suppressMessages(library(ggplot2))
+suppressMessages(library(ngram))
+suppressMessages(library(quanteda))
+suppressMessages(library(gridExtra))
+```
+
+## Load, sample and clean the data
+
+1. Let’s first load the data and read lines into variables in R
+
+```{r}
+# File path
+file1 <- "./final/en_US/en_US.blogs.txt"
+file2 <- "./final/en_US/en_US.news.txt"
+file3 <- "./final/en_US/en_US.twitter.txt"
+# Read blogs
+connect <- file(file1, open="rb")
+blogs <- readLines(connect, encoding="UTF-8"); close(connect)
+# Read news
+connect <- file(file2, open="rb")
+news <- readLines(connect, encoding="UTF-8"); close(connect)
+# Read twitter
+connect <- file(file3, open="rb")
+twitter <- readLines(connect, encoding="UTF-8"); close(connect)
+rm(connect)
+```
+
+2. Let’s examine the data and get the sense of data we will be dealing with
+
+```{r}
+summaryData <- sapply(list(blogs,news,twitter),function(x) summary(stri_count_words(x))[c('Min.','Mean','Max.')])
+rownames(summaryData) <- c('Min','Mean','Max')
+stats <- data.frame(
+  FileName=c("en_US.blogs","en_US.news","en_US.twitter"),      
+  t(rbind(sapply(list(blogs,news,twitter),stri_stats_general)[c('Lines','Chars'),],  Words=sapply(list(blogs,news,twitter),stri_stats_latex)['Words',], summaryData)))
+head(stats)
+```
+
+```{r}
+# Get file sizes
+blogs.size <- file.info(file1)$size / 1024 ^ 2
+news.size <- file.info(file2)$size / 1024 ^ 2
+twitter.size <- file.info(file3)$size / 1024 ^ 2
+# Summary of dataset
+df<-data.frame(Doc = c("blogs", "news", "twitter"), Size.MB = c(blogs.size, news.size, twitter.size), Num.Lines = c(length(blogs), length(news), length(twitter)), Num.Words=c(sum(nchar(blogs)), sum(nchar(news)), sum(nchar(twitter))))
+df
+```
+
+3. Since these data are pretty big in size and we only have limited computer memory to process them, we have to sample the data first and then clean the data a bit. In terms of sampling the data, I am going to take 0.1% of each data set to ensure the memory of my machine is sufficient to effectively process the data. I have tried taking 1% but the memory of my machine failed to process it so I had to go for a smaller chunk of the data.
+
+```{r}
+set.seed(123)
+# Sampling
+sampleBlogs <- blogs[sample(1:length(blogs), 0.001*length(blogs), replace=FALSE)]
+sampleNews <- news[sample(1:length(news), 0.001*length(news), replace=FALSE)]
+sampleTwitter <- twitter[sample(1:length(twitter), 0.001*length(twitter), replace=FALSE)]
+# Cleaning
+sampleBlogs <- iconv(sampleBlogs, "UTF-8", "ASCII", sub="")
+sampleNews <- iconv(sampleNews, "UTF-8", "ASCII", sub="")
+sampleTwitter <- iconv(sampleTwitter, "UTF-8", "ASCII", sub="")
+data.sample <- c(sampleBlogs,sampleNews,sampleTwitter)
+```
+
+
+## Build Corpus and more cleaning
+
+Now that we have sampled our data and combined all three of the data sets into one. We will go ahead and build the corpus which will be used to build the data matrix term later. In this section, we will also apply some more cleaning process to remove lowercase, punctuation, numbers and whitespace.
+
+```{r}
+build_corpus <- function (x = data.sample) {
+  sample_c <- VCorpus(VectorSource(x)) # Create corpus dataset
+  sample_c <- tm_map(sample_c, content_transformer(tolower)) # all lowercase
+  sample_c <- tm_map(sample_c, removePunctuation) # Eleminate punctuation
+  sample_c <- tm_map(sample_c, removeNumbers) # Eliminate numbers
+  sample_c <- tm_map(sample_c, stripWhitespace) # Strip Whitespace
+}
+corpusData <- build_corpus(data.sample)
+```
+
+## Tokenize and build n-grams
+
+```{r}
+getTermTable <- function(corpusData, ngrams = 1, lowfreq = 50) {
+  #create term-document matrix tokenized on n-grams
+  tokenizer <- function(x) { NGramTokenizer(x, Weka_control(min = ngrams, max = ngrams)) }
+  tdm <- TermDocumentMatrix(corpusData, control = list(tokenize = tokenizer))
+  #find the top term grams with a minimum of occurrence in the corpus
+  top_terms <- findFreqTerms(tdm,lowfreq)
+  top_terms_freq <- rowSums(as.matrix(tdm[top_terms,]))
+  top_terms_freq <- data.frame(word = names(top_terms_freq), frequency = top_terms_freq)
+  top_terms_freq <- arrange(top_terms_freq, desc(frequency))
+}
+    
+tt.Data <- list(3)
+for (i in 1:3) {
+  tt.Data[[i]] <- getTermTable(corpusData, ngrams = i, lowfreq = 10)
+}
+```
+
+## Build Wordcloud
+
+Let’s plot wordcloud to see word frequencies
+
+```{r}
+# Set random seed for reproducibility
+set.seed(123)
+# Set Plotting in 1 row 3 columns
+par(mfrow=c(1, 3))
+for (i in 1:3) {
+  wordcloud(tt.Data[[i]]$word, tt.Data[[i]]$frequency, scale = c(3,1), max.words=100, random.order=FALSE, rot.per=0, fixed.asp = TRUE, use.r.layout = FALSE, colors=brewer.pal(8, "Dark2"))
+}
+```
+
+## Build n-gram models and histograms
+
+In this section, I build unigram, bi-gram and tri-gram models for the data and will give sense of distributions of the words through histograms
+
+```{r}
+plot.Grams <- function (x = tt.Data, N=10) {
+  g1 <- ggplot(data = head(x[[1]],N), aes(x = reorder(word, -frequency), y = frequency)) + 
+        geom_bar(stat = "identity", fill = "green") + 
+        ggtitle(paste("Unigrams")) + 
+        xlab("Unigrams") + ylab("Frequency") + 
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  g2 <- ggplot(data = head(x[[2]],N), aes(x = reorder(word, -frequency), y = frequency)) + 
+        geom_bar(stat = "identity", fill = "blue") + 
+        ggtitle(paste("Bigrams")) + 
+        xlab("Bigrams") + ylab("Frequency") + 
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  g3 <- ggplot(data = head(x[[3]],N), aes(x = reorder(word, -frequency), y = frequency)) + 
+        geom_bar(stat = "identity", fill = "darkgreen") + 
+        ggtitle(paste("Trigrams")) + 
+        xlab("Trigrams") + ylab("Frequency") + 
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  # Put three plots into 1 row 3 columns
+  gridExtra::grid.arrange(g1, g2, g3, ncol = 3)
+}
+plot.Grams(x = tt.Data, N = 20)
+```
+
+
+## Findings and next steps
+
+Next is to plan for Creating Prediction Algorithm and Shiny Application
+
+To train the prediction model:
+
+1. All 3 of the file are very large. Even for the 0.1% of data just to perform the exploratory analysis and ngram model, it look quite a bit of time, so i need to look at better utilizing the resources and increase the performance.
+
+2. Looking at the unigram frequencies, there are a lot of word overlap between the most frequent words in these 3 files.As next step to this, I need to perform more data cleaning to remove words such as “the”, “of the” and so on.
+
+3.Review on how to remove the mispelled words & not to predict the misspelled word.
+
+4. I have also looked up on Stemming Words using snowball stemmers and will be performing this.
+
+5. I have looked up Markov chain solutions for predicting and I might be using this in next steps.
+
+6. Finally the application will be built in shiny.
+
